@@ -186,7 +186,7 @@ ul { list-style: none; }
   z-index: 0;
 }
 .hero-bg img {
-  filter: brightness(0.55);
+  filter: brightness(0.78);
   height: 100%;
 }
 
