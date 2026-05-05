@@ -377,11 +377,6 @@ section { padding: 96px 0; }
 .offices-list li strong { color: var(--color-text); }
 
 .access-map { display: flex; flex-direction: column; gap: 12px; }
-.access-map img {
-  height: 280px;
-  border-radius: var(--radius);
-  background: var(--color-border);
-}
 
 .map-link {
   display: inline-block;
