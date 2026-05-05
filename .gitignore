@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Python（このプロジェクトでは使わないが将来用）
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 機密
+.env
+*.local
+
+# Claude Code 関連
+.claude/sessions/
