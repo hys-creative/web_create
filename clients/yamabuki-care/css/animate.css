@@ -1,0 +1,63 @@
+/* =====================
+   テキストクリップリビール（ヒーロータイトル）
+   ===================== */
+.reveal-clip {
+  display: block;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.reveal-clip.visible { clip-path: inset(0 0% 0 0); }
+
+/* =====================
+   フェードアップ
+   ===================== */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.reveal-up.visible { opacity: 1; transform: translateY(0); }
+
+/* =====================
+   方向スライド
+   ===================== */
+.slide-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.slide-up.visible { opacity: 1; transform: translateY(0); }
+
+.slide-right {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.slide-right.visible { opacity: 1; transform: translateX(0); }
+
+.slide-left {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.slide-left.visible { opacity: 1; transform: translateX(0); }
+
+/* =====================
+   画像スケール（スクロール連動）
+   ===================== */
+.img-scale {
+  overflow: hidden;
+}
+.img-scale img {
+  transform: scale(1.08);
+  transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.img-scale.visible img { transform: scale(1); }
+
+/* =====================
+   ディレイ
+   ===================== */
+.delay-1 { transition-delay: 0.15s !important; }
+.delay-2 { transition-delay: 0.30s !important; }
+.delay-3 { transition-delay: 0.45s !important; }
+.delay-4 { transition-delay: 0.60s !important; }
