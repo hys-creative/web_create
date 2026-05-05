@@ -1,0 +1,40 @@
+/* =====================
+   スクロールアニメーション
+   ===================== */
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* カードの遅延表示 */
+.service-card:nth-child(1) { transition-delay: 0.0s; }
+.service-card:nth-child(2) { transition-delay: 0.1s; }
+.service-card:nth-child(3) { transition-delay: 0.2s; }
+.service-card:nth-child(4) { transition-delay: 0.3s; }
+.service-card:nth-child(5) { transition-delay: 0.4s; }
+
+.feature-item:nth-child(1) { transition-delay: 0.0s; }
+.feature-item:nth-child(2) { transition-delay: 0.15s; }
+.feature-item:nth-child(3) { transition-delay: 0.3s; }
+
+/* CTAボタンのpulse */
+@keyframes pulse {
+  0%   { box-shadow: 0 4px 16px rgba(212, 132, 90, 0.35); }
+  50%  { box-shadow: 0 4px 28px rgba(212, 132, 90, 0.65); }
+  100% { box-shadow: 0 4px 16px rgba(212, 132, 90, 0.35); }
+}
+
+#cta .btn-primary {
+  animation: none;
+}
+
+#hero .btn-primary {
+  animation: pulse 2.5s ease-in-out infinite;
+}
