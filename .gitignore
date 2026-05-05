@@ -20,4 +20,4 @@ venv/
 *.local
 
 # Claude Code 関連
-.claude/sessions/
+.claude/
