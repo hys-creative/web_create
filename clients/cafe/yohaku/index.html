@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>時計の針を、少しだけ止めて。 | 珈琲店「余白」</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+      :root {
+        --bg-dark: #120e0c; /* 深い焦げ茶（背景） */
+        --bg-light: #f4eee6; /* 古紙のような白（セクション背景） */
+        --text-light: #e6dcc8; /* 淡いベージュ（暗い背景上のテキスト） */
+        --text-dark: #2c231f; /* 濃い茶色（明るい背景上のテキスト） */
+        --accent: #c29d6d; /* 真鍮のようなゴールド */
+        --font-serif: "Shippori Mincho", serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        /* ページ内リンクのスムーススクロール */
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--font-serif);
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        line-height: 2.2;
+        letter-spacing: 0.08em;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* --- Header & Navigation --- */
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 30px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 110; /* ★修正: SPドロワーメニュー(105)より常に前面に来るように数値を上げました */
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .header-logo {
+        font-size: 1.4rem;
+        letter-spacing: 0.2em;
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .pc-nav {
+        display: flex;
+        gap: 40px;
+        list-style: none;
+      }
+
+      .pc-nav a {
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 0.95rem;
+        letter-spacing: 0.1em;
+        transition: color 0.3s ease;
+      }
+
+      .pc-nav a:hover {
+        color: var(--accent);
+      }
+
+      /* ハンバーガーボタン (SP用) */
+      .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        width: 30px;
+        height: 20px;
+        position: relative;
+      }
+
+      .hamburger span {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: var(--text-light);
+        transition: all 0.3s ease;
+      }
+
+      .hamburger span:nth-child(1) {
+        top: 0;
+      }
+      .hamburger span:nth-child(2) {
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .hamburger span:nth-child(3) {
+        bottom: 0;
+      }
+
+      .hamburger.is-active span:nth-child(1) {
+        top: 50%;
+        transform: translateY(-50%) rotate(45deg);
+      }
+      .hamburger.is-active span:nth-child(2) {
+        opacity: 0;
+      }
+      .hamburger.is-active span:nth-child(3) {
+        top: 50%;
+        transform: translateY(-50%) rotate(-45deg);
+      } /* きれいに×になるよう修正 */
+
+      /* SP用ドロワーメニュー */
+      .sp-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(18, 14, 12, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 105; /* ★修正: ヘッダー(110)より後ろに来るように調整しました */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease;
+      }
+
+      .sp-nav.is-active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .sp-nav ul {
+        list-style: none;
+        text-align: center;
+      }
+
+      .sp-nav li {
+        margin-bottom: 2.5rem;
+      }
+
+      .sp-nav a {
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 1.5rem;
+        letter-spacing: 0.2em;
+        transition: color 0.3s;
+      }
+
+      .sp-nav a:hover {
+        color: var(--accent);
+      }
+
+      /* --- Canvas Effect --- */
+      #fx-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999;
+        pointer-events: none;
+        mix-blend-mode: screen;
+        opacity: 0.6;
+      }
+
+      #bg-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* --- Loader --- */
+      #loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: var(--bg-dark);
+        z-index: 99999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--accent);
+        font-size: 2rem;
+        letter-spacing: 0.5em;
+      }
+
+      .char {
+        display: inline-block;
+      }
+
+      /* --- Layout & Utilities --- */
+      .wrapper {
+        position: relative;
+        z-index: 1;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 120px 40px;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-weight: 500;
+      }
+
+      .gs-fade {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      /* --- MV --- */
+      .mv {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mv-bg {
+        position: absolute;
+        top: -15%;
+        left: -15%;
+        width: 130%;
+        height: 130%;
+        background-image: url("https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=1920&auto=format&fit=crop");
+        background-size: cover;
+        background-position: center;
+        z-index: -2;
+      }
+
+      .mv-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(18, 14, 12, 0.1) 0%, rgba(18, 14, 12, 0.5) 100%);
+        z-index: -1;
+      }
+
+      .mv h1 {
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        margin-bottom: 2rem;
+        color: var(--text-light);
+        text-shadow: 0 2px 15px rgba(0, 0, 0, 0.8);
+      }
+
+      .mv p {
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        text-align: center;
+        opacity: 0.9;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      }
+
+      .scroll-down {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--accent);
+        font-size: 0.8rem;
+        letter-spacing: 0.2em;
+        opacity: 0.7;
+      }
+
+      .scroll-line {
+        width: 1px;
+        height: 60px;
+        background-color: var(--accent);
+        margin-top: 10px;
+        transform-origin: top;
+      }
+
+      /* --- Story (明るい背景) --- */
+      .story-section {
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+      }
+
+      .section-title {
+        font-size: clamp(1.8rem, 3vw, 2.5rem);
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 1px;
+        background-color: var(--accent);
+        margin: 1.5rem auto 0;
+      }
+
+      .flex-layout {
+        display: flex;
+        gap: 50px;
+        align-items: center;
+        margin-top: 3rem;
+      }
+
+      .flex-layout > * {
+        flex: 1;
+      }
+
+      .img-reveal-wrap {
+        overflow: hidden;
+        position: relative;
+        border-radius: 4px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        clip-path: inset(100% 0% 0% 0%);
+      }
+
+      .img-reveal-wrap img {
+        width: 100%;
+        height: 100%;
+        max-height: 500px;
+        object-fit: cover;
+        display: block;
+        filter: sepia(0.2) brightness(0.85) contrast(1.1);
+      }
+
+      .space-gallery {
+        display: flex;
+        gap: 20px;
+        margin-top: 3rem;
+      }
+
+      .space-gallery .img-reveal-wrap img {
+        max-height: 300px;
+      }
+
+      .story-text p {
+        margin-bottom: 2rem;
+        font-size: 1.05rem;
+      }
+
+      /* --- Menu (暗い背景) --- */
+      .menu-section {
+        background-color: var(--bg-dark);
+      }
+
+      .menu-list {
+        list-style: none;
+        margin-top: 4rem;
+      }
+
+      .menu-item {
+        margin-bottom: 3.5rem;
+        border-bottom: 1px solid rgba(230, 220, 200, 0.1);
+        padding-bottom: 2rem;
+        display: flex;
+        gap: 30px;
+        align-items: center;
+      }
+
+      .menu-item:last-child {
+        border-bottom: none;
+      }
+
+      .menu-content {
+        flex: 1;
+      }
+
+      .menu-thumb {
+        width: 120px;
+        height: 120px;
+        flex-shrink: 0;
+        overflow: hidden;
+        border-radius: 50%;
+        border: 1px solid rgba(194, 157, 109, 0.3);
+      }
+
+      .menu-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: sepia(0.3) brightness(0.8);
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      .menu-item:hover .menu-thumb img {
+        transform: scale(1.15) rotate(3deg);
+      }
+
+      .menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 1rem;
+      }
+
+      .menu-name {
+        font-size: 1.3rem;
+        color: var(--accent);
+        transition: color 0.3s ease;
+      }
+
+      .menu-item:hover .menu-name {
+        color: var(--text-light);
+      }
+
+      .menu-price {
+        font-size: 1.1rem;
+        font-family: serif;
+        opacity: 0.8;
+      }
+
+      .menu-desc {
+        font-size: 0.95rem;
+        opacity: 0.7;
+      }
+
+      /* --- Space (明るい背景) --- */
+      .space-section {
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+      }
+
+      .space-content p {
+        margin-bottom: 2rem;
+      }
+
+      /* --- Information --- */
+      .info-section {
+        background-color: var(--bg-dark);
+        text-align: center;
+        padding-bottom: 80px;
+      }
+
+      .info-box {
+        border: 1px solid rgba(194, 157, 109, 0.3);
+        padding: 3rem;
+        display: inline-block;
+        text-align: left;
+        background: rgba(0, 0, 0, 0.2);
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .info-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      .info-box dl {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+      }
+
+      .info-box dt {
+        width: 80px;
+        color: var(--accent);
+        margin-bottom: 1rem;
+      }
+
+      .info-box dd {
+        width: calc(100% - 80px);
+        margin-bottom: 1rem;
+        opacity: 0.8;
+      }
+
+      /* --- Footer 拡充 --- */
+      .footer {
+        background-color: #0c0908; /* 背景よりさらに一段暗い色 */
+        text-align: center;
+        padding: 80px 20px 40px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        z-index: 1;
+      }
+
+      .footer-logo {
+        font-size: 2rem;
+        color: var(--accent);
+        letter-spacing: 0.2em;
+        margin-bottom: 2.5rem;
+        display: inline-block;
+      }
+
+      .footer-nav {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        list-style: none;
+        margin-bottom: 4rem;
+        flex-wrap: wrap;
+      }
+
+      .footer-nav a {
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 0.95rem;
+        letter-spacing: 0.1em;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+      }
+
+      .footer-nav a:hover {
+        opacity: 1;
+        color: var(--accent);
+      }
+
+      .copyright {
+        font-size: 0.8rem;
+        opacity: 0.4;
+        letter-spacing: 0.05em;
+      }
+
+      /* --- SP Breakpoint (640px) --- */
+      @media (max-width: 640px) {
+        header {
+          padding: 20px;
+        }
+        .pc-nav {
+          display: none;
+        }
+        .hamburger {
+          display: block;
+        }
+
+        .container {
+          padding: 80px 20px;
+        }
+        .flex-layout {
+          flex-direction: column;
+          gap: 30px;
+        }
+        .space-gallery {
+          flex-direction: column;
+        }
+
+        .menu-item {
+          flex-direction: column-reverse;
+          align-items: flex-start;
+          gap: 20px;
+        }
+        .menu-thumb {
+          width: 100%;
+          height: 200px;
+          border-radius: 4px;
+        }
+        .menu-header {
+          flex-direction: column;
+        }
+        .menu-price {
+          margin-top: 0.5rem;
+        }
+
+        .info-box {
+          padding: 2rem 1.5rem;
+          width: 100%;
+        }
+        .info-box dt,
+        .info-box dd {
+          width: 100%;
+          margin-bottom: 0.5rem;
+        }
+        .info-box dd {
+          margin-bottom: 1.5rem;
+        }
+
+        .footer {
+          padding: 60px 20px 30px;
+        }
+        .footer-nav {
+          gap: 20px;
+          margin-bottom: 3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ローディング画面 -->
+    <div id="loader">
+      <div class="loader-text">YOHAKU</div>
+    </div>
+
+    <!-- グローバルヘッダー -->
+    <header id="header">
+      <a href="#" class="header-logo">YOHAKU</a>
+
+      <!-- PC用ナビゲーション -->
+      <nav class="pc-nav">
+        <li><a href="#story">Story</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#space">Space</a></li>
+        <li><a href="#info">Access</a></li>
+      </nav>
+
+      <!-- SP用ハンバーガーボタン -->
+      <button class="hamburger" id="js-hamburger" aria-label="メニューを開閉する">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <!-- SP用ドロワーメニュー -->
+    <nav class="sp-nav" id="js-sp-nav">
+      <ul>
+        <li><a href="#story" class="js-sp-link">Story</a></li>
+        <li><a href="#menu" class="js-sp-link">Menu</a></li>
+        <li><a href="#space" class="js-sp-link">Space</a></li>
+        <li><a href="#info" class="js-sp-link">Access</a></li>
+      </ul>
+    </nav>
+
+    <!-- レコードノイズや光の粒子を描画するCanvas -->
+    <canvas id="bg-canvas"></canvas>
+    <canvas id="fx-canvas"></canvas>
+
+    <div class="wrapper">
+      <section class="mv">
+        <div class="mv-bg"></div>
+        <div class="mv-overlay"></div>
+
+        <h1 class="gs-blur">
+          時計の針を、
+          <br style="display: none" class="sp-br" />
+          少しだけ止めて。
+        </h1>
+        <p class="gs-blur sp-delay">
+          琥珀色の灯りと、深く沈む焙煎の香り。
+          <br />
+          ここは、あなただけの「空白」の時間を紡ぐ場所。
+        </p>
+
+        <div class="scroll-down gs-fade">
+          SCROLL
+          <div class="scroll-line"></div>
+        </div>
+      </section>
+
+      <!-- 各セクションにアンカーリンク用の id を追加 -->
+      <section id="story" class="story-section">
+        <div class="container">
+          <h2 class="section-title split-text">効率を忘れるための、一杯を。</h2>
+          <div class="flex-layout">
+            <div class="story-text">
+              <p>
+                カラカラと豆を挽く音、お湯を含んでふっくらと呼吸するように膨らむ珈琲豆。
+                <br />
+                当店では、あえて少し時間のかかる抽出方法を選んでいます。
+              </p>
+              <p>それは単に味を追求するだけでなく、コーヒーが落ちるのを待つ「何もしない時間」こそが、現代には必要だと考えているからです。</p>
+              <p>店内に鎮座する年代物の焙煎機で、毎日少しずつ、その日の気候や豆の状態と対話しながら火を入れています。酸味を抑え、奥深い苦味と甘みが同居する深煎りのブレンドを中心に、一杯一杯、静かにドリップいたします。</p>
+              <p>スマートフォンを伏せて、ただ漂う香りに身を委ねてみてください。</p>
+            </div>
+            <!-- 画像アニメーション用のラッパー -->
+            <div class="img-reveal-wrap">
+              <img src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?q=80&w=800&auto=format&fit=crop" alt="焙煎される珈琲豆" onerror="this.src = 'https://placehold.co/800x1000/2c231f/e6dcc8.png?text=Roasting+Machine'" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="menu" class="menu-section">
+        <div class="container">
+          <h2 class="section-title split-text">珈琲と、ささやかな甘味。</h2>
+          <ul class="menu-list">
+            <li class="menu-item">
+              <div class="menu-content">
+                <div class="menu-header">
+                  <h3 class="menu-name">【深煎】夜行ブレンド</h3>
+                  <span class="menu-price">¥750</span>
+                </div>
+                <p class="menu-desc">カカオのような重厚なコクと、冷めるにつれて顔を出す黒糖のような甘み。読書のお供にゆっくりと時間をかけて味わっていただきたい、当店の看板ブレンドです。</p>
+              </div>
+              <div class="menu-thumb">
+                <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=400&auto=format&fit=crop" alt="夜行ブレンド" onerror="this.src = 'https://placehold.co/400x400/1a1412/c29d6d.png?text=Deep+Roast'" />
+              </div>
+            </li>
+            <li class="menu-item">
+              <div class="menu-content">
+                <div class="menu-header">
+                  <h3 class="menu-name">【中煎】木漏れ日ブレンド</h3>
+                  <span class="menu-price">¥700</span>
+                </div>
+                <p class="menu-desc">休日の午後に似合う、ローストナッツの香ばしさと柔らかな口当たり。苦いのが少し苦手な方にもおすすめしています。</p>
+              </div>
+              <div class="menu-thumb">
+                <img src="https://images.unsplash.com/photo-1495474472204-51ea05c2324c?q=80&w=400&auto=format&fit=crop" alt="木漏れ日ブレンド" onerror="this.src = 'https://placehold.co/400x400/1a1412/c29d6d.png?text=Medium+Roast'" />
+              </div>
+            </li>
+            <li class="menu-item">
+              <div class="menu-content">
+                <div class="menu-header">
+                  <h3 class="menu-name">【甘味】自家製テリーヌ・ショコラ</h3>
+                  <span class="menu-price">¥650</span>
+                </div>
+                <p class="menu-desc">小麦粉を一切使わず、上質なクーベルチュールチョコレートと卵だけで焼き上げました。深煎りのコーヒーと合わせることで、口の中でとろけるマリアージュが完成します。</p>
+              </div>
+              <div class="menu-thumb">
+                <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=400&auto=format&fit=crop" alt="自家製テリーヌ・ショコラ" onerror="this.src = 'https://placehold.co/400x400/1a1412/c29d6d.png?text=Chocolate+Cake'" />
+              </div>
+            </li>
+            <li class="menu-item">
+              <div class="menu-content">
+                <div class="menu-header">
+                  <h3 class="menu-name">【甘味】季節のパウンドケーキ</h3>
+                  <span class="menu-price">¥550</span>
+                </div>
+                <p class="menu-desc">週末だけ焼き上げる、ラム酒を少し効かせた大人のパウンドケーキ。</p>
+              </div>
+              <div class="menu-thumb">
+                <img src="https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?q=80&w=400&auto=format&fit=crop" alt="季節のパウンドケーキ" onerror="this.src = 'https://placehold.co/400x400/1a1412/c29d6d.png?text=Pound+Cake'" />
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="space" class="space-section">
+        <div class="container">
+          <h2 class="section-title split-text">音と光が溶け込む、特等席。</h2>
+          <div class="space-content story-text text-center">
+            <p>
+              店内を満たすのは、真空管アンプから流れる古いジャズのレコード。
+              <br />
+              年月を経て鈍く光る真鍮のランプシェードと、使い込まれて艶の出たカリモクのソファ。
+            </p>
+            <p>
+              おひとり様用の席を多く設けておりますので、誰にも気を遣わず、思い思いの「孤り」の時間を楽しんでいただけます。
+              <br />
+              お気に入りの本を一冊持って、どうぞお立ち寄りください。
+            </p>
+          </div>
+          <div class="space-gallery">
+            <div class="img-reveal-wrap">
+              <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop" alt="カフェ店内 1" onerror="this.src = 'https://placehold.co/800x800/1a1412/e6dcc8.png?text=Antique+Sofa'" />
+            </div>
+            <div class="img-reveal-wrap">
+              <img src="https://images.unsplash.com/photo-1463797221720-6b07e60054dd?q=80&w=800&auto=format&fit=crop" alt="レコードプレイヤー" onerror="this.src = 'https://placehold.co/800x800/1a1412/e6dcc8.png?text=Record+Player'" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="info" class="info-section">
+        <div class="container">
+          <h2 class="section-title split-text">扉の向こうでお待ちしております。</h2>
+          <div class="info-box gs-up">
+            <dl>
+              <dt>営業時間</dt>
+              <dd>13:00 - 22:00（夜ふかしのための珈琲店です）</dd>
+              <dt>定休日</dt>
+              <dd>火曜・水曜</dd>
+              <dt>住所</dt>
+              <dd>大阪府大阪市〇〇区〇〇 3-4-5</dd>
+              <dt>アクセス</dt>
+              <dd>
+                〇〇駅から徒歩7分。
+                <br />
+                大通りから一本入った路地裏、錆びたアイアンの小さな看板が目印です。
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- 拡充したフッター -->
+      <footer class="footer">
+        <div class="footer-logo">YOHAKU</div>
+        <ul class="footer-nav">
+          <li><a href="#story">Story</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#space">Space</a></li>
+          <li><a href="#info">Access</a></li>
+        </ul>
+        <p class="copyright">&copy; 2026 Cafe YOHAKU. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <script>
+      // --------------------------------------------------------
+      // SP Hamburger Menu Logic
+      // --------------------------------------------------------
+      const hamburger = document.getElementById("js-hamburger");
+      const spNav = document.getElementById("js-sp-nav");
+      const spLinks = document.querySelectorAll(".js-sp-link");
+
+      // ハンバーガーボタンクリックでメニュー開閉
+      hamburger.addEventListener("click", () => {
+        hamburger.classList.toggle("is-active");
+        spNav.classList.toggle("is-active");
+      });
+
+      // メニュー内のリンクをクリックしたらメニューを閉じる
+      spLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          hamburger.classList.remove("is-active");
+          spNav.classList.remove("is-active");
+        });
+      });
+
+      // --------------------------------------------------------
+      // GSAP Scroll Animations
+      // --------------------------------------------------------
+      gsap.registerPlugin(ScrollTrigger);
+
+      // テキストを1文字ずつ分割する関数
+      function splitTextToChars(selector) {
+        document.querySelectorAll(selector).forEach((el) => {
+          const text = el.innerText;
+          el.innerHTML = "";
+          text.split("").forEach((char) => {
+            if (char === " " || char === "　") {
+              el.innerHTML += "&nbsp;";
+            } else {
+              el.innerHTML += `<span class="char">${char}</span>`;
+            }
+          });
+        });
+      }
+
+      window.addEventListener("load", () => {
+        splitTextToChars(".split-text");
+
+        const tl = gsap.timeline();
+
+        // 0. ローディングアニメーション
+        tl.fromTo(".loader-text", { autoAlpha: 0, letterSpacing: "1em", filter: "blur(10px)" }, { autoAlpha: 1, letterSpacing: "0.5em", filter: "blur(0px)", duration: 1.5, ease: "power2.out" })
+          .to(".loader-text", { autoAlpha: 0, duration: 0.8, delay: 0.5 })
+          .to("#loader", { yPercent: -100, duration: 1.2, ease: "power4.inOut" }, "-=0.2")
+
+          // ★追加: ローディング完了後にヘッダーをフェードイン
+          .to("header", { autoAlpha: 1, duration: 1, ease: "power2.out" }, "-=0.5")
+
+          // 1. MVの初期アニメーション (ローダー後)
+          .fromTo(".gs-blur", { autoAlpha: 0, filter: "blur(10px)", y: 20 }, { autoAlpha: 1, filter: "blur(0px)", y: 0, duration: 1.5, stagger: 0.3, ease: "power2.out" }, "-=1.0")
+          .to(".scroll-line", { scaleY: 1, duration: 1.5, ease: "expo.inOut" }, "-=1")
+          .to(".scroll-down", { autoAlpha: 1, duration: 1 }, "-=1.5");
+
+        gsap.to(".scroll-line", {
+          scaleY: 0,
+          transformOrigin: "bottom",
+          duration: 1.5,
+          repeat: -1,
+          yoyo: true,
+          ease: "power1.inOut",
+          delay: 3,
+        });
+
+        // ★追加: スクロール時にヘッダーの背景を暗くする
+        gsap.to("header", {
+          backgroundColor: "rgba(18, 14, 12, 0.9)",
+          backdropFilter: "blur(10px)",
+          paddingTop: "20px",
+          paddingBottom: "20px",
+          duration: 0.3,
+          scrollTrigger: {
+            trigger: "body",
+            start: "top -50",
+            toggleActions: "play none none reverse",
+          },
+        });
+
+        // 1.5 見出し（split-text）のアニメーション
+        gsap.utils.toArray(".split-text").forEach((title) => {
+          let chars = title.querySelectorAll(".char");
+          gsap.fromTo(
+            chars,
+            { autoAlpha: 0, y: 20, filter: "blur(5px)", rotationX: -90 },
+            {
+              scrollTrigger: {
+                trigger: title,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+              autoAlpha: 1,
+              y: 0,
+              filter: "blur(0px)",
+              rotationX: 0,
+              duration: 0.8,
+              stagger: 0.05,
+              ease: "back.out(1.7)",
+            },
+          );
+        });
+
+        // 2. MV背景のパララックス効果
+        gsap.to(".mv-bg", {
+          yPercent: 20,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".mv",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+
+        // 3. テキストの段落ごとのフェードイン
+        gsap.utils.toArray(".story-text").forEach((block) => {
+          let ps = block.querySelectorAll("p");
+          gsap.fromTo(
+            ps,
+            { autoAlpha: 0, y: 20, filter: "blur(5px)" },
+            {
+              scrollTrigger: {
+                trigger: block,
+                start: "top 80%",
+                toggleActions: "play none none reverse",
+              },
+              autoAlpha: 1,
+              y: 0,
+              filter: "blur(0px)",
+              duration: 1.2,
+              stagger: 0.3,
+              ease: "power2.out",
+            },
+          );
+        });
+
+        // 4. 画像の幕開け（Clip-path）＆ ズームアウト ＋ パララックス強化
+        gsap.utils.toArray(".img-reveal-wrap").forEach((wrap) => {
+          let img = wrap.querySelector("img");
+          let imgTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: wrap,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          });
+          // 幕が開く
+          imgTl
+            .fromTo(wrap, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.2, ease: "power3.inOut" })
+            // 中の画像が奥へ引く
+            .fromTo(img, { scale: 1.4 }, { scale: 1.1, duration: 1.5, ease: "power2.out" }, "-=1.2");
+
+          // 追加：画像のスクロールパララックス
+          gsap.to(img, {
+            yPercent: 15,
+            ease: "none",
+            scrollTrigger: {
+              trigger: wrap,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
+        });
+
+        // 5. メニューリストの順次(Stagger)フェードイン
+        gsap.utils.toArray(".menu-list").forEach((list) => {
+          let items = list.querySelectorAll(".menu-item");
+          gsap.fromTo(
+            items,
+            { autoAlpha: 0, y: 30 },
+            {
+              scrollTrigger: {
+                trigger: list,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.8,
+              stagger: 0.2,
+              ease: "power2.out",
+            },
+          );
+        });
+
+        // 6. その他の汎用フェードイン
+        gsap.utils.toArray(".gs-up").forEach((elem) => {
+          gsap.fromTo(
+            elem,
+            { autoAlpha: 0, y: 40 },
+            {
+              scrollTrigger: {
+                trigger: elem,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+              autoAlpha: 1,
+              y: 0,
+              duration: 1.2,
+              ease: "power3.out",
+            },
+          );
+        });
+      });
+
+      // --------------------------------------------------------
+      // Canvas Effects (光の粒子 ＆ フィルムノイズ)
+      // --------------------------------------------------------
+      const bgCanvas = document.getElementById("bg-canvas");
+      const bgCtx = bgCanvas.getContext("2d");
+      const fxCanvas = document.getElementById("fx-canvas");
+      const fxCtx = fxCanvas.getContext("2d");
+
+      let width, height;
+      let particles = [];
+
+      function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        bgCanvas.width = width;
+        bgCanvas.height = height;
+        fxCanvas.width = width;
+        fxCanvas.height = height;
+
+        const spBr = document.querySelector(".sp-br");
+        if (spBr) spBr.style.display = width <= 640 ? "block" : "none";
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+
+      class Particle {
+        constructor() {
+          this.reset();
+          this.y = Math.random() * height;
+        }
+        reset() {
+          this.x = Math.random() * width;
+          this.y = height + Math.random() * 100;
+          this.size = Math.random() * 1.5 + 0.5;
+          this.vx = (Math.random() - 0.5) * 0.3;
+          this.vy = -(Math.random() * 0.5 + 0.1);
+          this.alpha = Math.random() * 0.5 + 0.1;
+          this.glow = Math.random() * 0.02;
+        }
+        update() {
+          // 基本の動き
+          this.x += this.vx + Math.sin(Date.now() * 0.001 + this.y) * 0.2;
+          this.y += this.vy;
+          this.alpha += Math.sin(Date.now() * this.glow) * 0.01;
+
+          if (this.alpha < 0) this.alpha = 0;
+          if (this.y < -10 || this.x < -10 || this.x > width + 10) this.reset();
+        }
+        draw(ctx) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(194, 157, 109, ${this.alpha})`;
+          ctx.fill();
+        }
+      }
+
+      // ★追加: 湯気(スモーク)のクラス
+      class Smoke {
+        constructor() {
+          this.reset();
+          this.y = Math.random() * height;
+        }
+        reset() {
+          this.x = Math.random() * width;
+          this.y = height + Math.random() * 200;
+          this.size = Math.random() * 60 + 40; // 大きめのぼやけた円
+          this.vx = (Math.random() - 0.5) * 0.5;
+          this.vy = -(Math.random() * 0.5 + 0.2); // ゆっくり上昇
+          this.alpha = 0;
+          this.targetAlpha = Math.random() * 0.05 + 0.01; // 非常に薄い
+          this.life = 0;
+        }
+        update() {
+          this.x += this.vx + Math.sin(Date.now() * 0.0005 + this.y) * 0.5;
+          this.y += this.vy;
+          this.size += 0.1; // 上昇しながら広がる
+
+          this.life++;
+          if (this.life < 100) {
+            this.alpha += (this.targetAlpha - this.alpha) * 0.02;
+          } else if (this.y < height * 0.3) {
+            this.alpha -= 0.001; // 上部で徐々に消える
+          }
+
+          if (this.alpha < 0 || this.y < -100) this.reset();
+        }
+        draw(ctx) {
+          const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+          grad.addColorStop(0, `rgba(230, 220, 200, ${this.alpha})`);
+          grad.addColorStop(1, `rgba(230, 220, 200, 0)`);
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+      }
+
+      const particleCount = window.innerWidth < 640 ? 40 : 100;
+      let smokes = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+      for (let i = 0; i < 15; i++) {
+        smokes.push(new Smoke());
+      }
+
+      function drawNoise(ctx) {
+        if (width <= 0 || height <= 0) return;
+        const imgData = ctx.createImageData(width, height);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const val = Math.random() * 255;
+          data[i] = val;
+          data[i + 1] = val;
+          data[i + 2] = val;
+          data[i + 3] = Math.random() * 10;
+        }
+        ctx.putImageData(imgData, 0, 0);
+      }
+
+      function animate() {
+        bgCtx.clearRect(0, 0, width, height);
+
+        // スモークの描画
+        smokes.forEach((s) => {
+          s.update();
+          s.draw(bgCtx);
+        });
+
+        // 粒子の描画
+        particles.forEach((p) => {
+          p.update();
+          p.draw(bgCtx);
+        });
+
+        if (Math.random() > 0.5) {
+          fxCtx.clearRect(0, 0, width, height);
+          drawNoise(fxCtx);
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>
