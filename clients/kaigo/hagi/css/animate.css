@@ -1,0 +1,335 @@
+/* ============================================================
+   Animations — SVGパス描画 / 4種登場 / ホバー / reduced-motion
+============================================================ */
+
+/* ===== Section登場アニメ：4種 ===== */
+
+/* 共通: data-anim 属性を持つセクションは初期状態で非表示 */
+section[data-anim] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 1s cubic-bezier(0.2,0.7,0.3,1), transform 1s cubic-bezier(0.2,0.7,0.3,1);
+}
+section[data-anim].visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 1. flip: 紙が捲られる */
+section[data-anim="flip"] {
+  transform-origin: top center;
+  transform: perspective(1200px) rotateX(-12deg) translateY(40px);
+  opacity: 0;
+}
+section[data-anim="flip"].visible {
+  transform: perspective(1200px) rotateX(0) translateY(0);
+}
+
+/* 2. ink: にじみ→クリア */
+section[data-anim="ink"] {
+  filter: blur(8px) saturate(0.5);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: filter 1.1s ease-out, opacity 1.1s ease-out, transform 1.1s ease-out;
+}
+section[data-anim="ink"].visible {
+  filter: blur(0) saturate(1);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 3. rule: 上下罫線が引かれた後に中身フェード */
+section[data-anim="rule"] {
+  position: relative;
+}
+section[data-anim="rule"]::before,
+section[data-anim="rule"]::after {
+  content: '';
+  position: absolute;
+  left: 8%; right: 8%;
+  height: 1.5px;
+  background: var(--rule);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.9s cubic-bezier(0.4,0,0.2,1);
+}
+section[data-anim="rule"]::before { top: 32px; }
+section[data-anim="rule"]::after  { bottom: 32px; transform-origin: right center; }
+section[data-anim="rule"].visible::before,
+section[data-anim="rule"].visible::after { transform: scaleX(1); }
+
+/* 4. type: 中身がタイプライター風に出現 */
+section[data-anim="type"] .section-title {
+  display: inline-block;
+  background: linear-gradient(90deg, var(--ink) 0 50%, transparent 50%) right / 200% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition: background-position 1.4s ease-out;
+}
+section[data-anim="type"].visible .section-title {
+  background-position: left;
+}
+
+/* ===== child fade-in 子要素を順番にフェード ===== */
+.fade-child {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.visible .fade-child,
+section.visible .fade-child { opacity: 1; transform: translateY(0); }
+
+.fade-child:nth-child(1) { transition-delay: 0.1s; }
+.fade-child:nth-child(2) { transition-delay: 0.2s; }
+.fade-child:nth-child(3) { transition-delay: 0.3s; }
+.fade-child:nth-child(4) { transition-delay: 0.4s; }
+.fade-child:nth-child(5) { transition-delay: 0.5s; }
+
+/* ===== SVGパス描画（stroke-dasharray技法） ===== */
+
+/* 全SVG装飾の初期化 */
+.draw-on-scroll path,
+.draw-on-scroll line {
+  stroke-dasharray: var(--len, 400);
+  stroke-dashoffset: var(--len, 400);
+  transition: stroke-dashoffset var(--dur, 1.2s) cubic-bezier(0.4,0,0.2,1);
+}
+.draw-on-scroll.drawn path,
+.draw-on-scroll.drawn line {
+  stroke-dashoffset: 0;
+}
+
+/* 個別装飾 */
+.phil-circle { color: var(--mustard); }
+.phil-circle path {
+  stroke-dasharray: 280;
+  stroke-dashoffset: 280;
+  transition: stroke-dashoffset 1.4s ease-out 0.4s;
+}
+.visible .phil-circle path { stroke-dashoffset: 0; }
+
+.flow-num-circle path {
+  stroke-dasharray: 280;
+  stroke-dashoffset: 280;
+  transition: stroke-dashoffset 1.2s ease-out 0.3s;
+}
+.visible .flow-num-circle path { stroke-dashoffset: 0; }
+
+.flow-arrow path {
+  stroke-dasharray: 110;
+  stroke-dashoffset: 110;
+  transition: stroke-dashoffset 0.9s ease-out 0.6s;
+}
+.visible .flow-arrow path { stroke-dashoffset: 0; }
+
+.meta-line path {
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  transition: stroke-dashoffset 1.4s ease-out 0.4s;
+}
+.service-article.visible .meta-line path { stroke-dashoffset: 0; }
+
+.scroll-line line {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: scrollDraw 1.6s ease-out 1.5s forwards;
+}
+@keyframes scrollDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* タイムライン */
+.tl-line {
+  background: repeating-linear-gradient(to right, var(--leaf) 0 4px, transparent 4px 9px);
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 1.2s ease-out 0.5s;
+}
+.sdgs.visible .tl-line { background-size: 100% 100%; }
+
+/* ===== ホバー演出 ===== */
+
+.polaroid {
+  transition: transform 0.5s cubic-bezier(0.2,0.8,0.3,1.2), box-shadow 0.5s;
+}
+.service-article:hover .service-photo .polaroid {
+  transform: rotate(calc(var(--rot, -1deg) + 1.2deg)) translateY(-6px);
+  box-shadow: 0 18px 50px rgba(43,33,24,0.22);
+}
+.service-article:hover .tape {
+  transform: scaleX(1.15) rotate(-22deg);
+}
+.tape { transition: transform 0.4s cubic-bezier(0.2,0.8,0.3,1.2); }
+
+/* CTA ボタン */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.btn-primary:hover::before { opacity: 1; }
+
+.btn-primary:hover .ico {
+  animation: phoneShake 0.5s ease-in-out;
+}
+@keyframes phoneShake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-15deg); }
+  75% { transform: rotate(15deg); }
+}
+
+/* リンクボタン: 矢印が伸びる */
+.btn-link:hover .ico-arrow {
+  transform: translateX(8px) scale(1.05);
+}
+
+/* HAGI page hover */
+.phil-page {
+  transition: transform 0.5s cubic-bezier(0.2,0.8,0.3,1.2), box-shadow 0.5s;
+}
+.phil-page:hover {
+  transform: rotate(0deg) translateY(-8px);
+  box-shadow: 0 22px 60px rgba(43,33,24,0.16);
+  z-index: 5;
+}
+
+/* Flow steps */
+.flow-step {
+  transition: transform 0.4s, box-shadow 0.4s;
+}
+.flow-step:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(43,33,24,0.12);
+}
+
+/* Letter tel */
+.letter-tel:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* SDG leaves: わずかに揺れる */
+.sd-leaf {
+  animation: leafSway 6s ease-in-out infinite;
+}
+.sd-leaf-1 { animation-delay: 0s; }
+.sd-leaf-2 { animation-delay: 1.2s; }
+.sd-leaf-3 { animation-delay: 2.5s; }
+.sd-leaf-4 { animation-delay: 0.8s; }
+.sd-leaf-5 { animation-delay: 3.2s; }
+
+@keyframes leafSway {
+  0%, 100% { transform: translate(0, 0) rotate(var(--base-rot, 0deg)); }
+  50% { transform: translate(8px, -6px) rotate(calc(var(--base-rot, 0deg) + 6deg)); }
+}
+.sd-leaf-1 { --base-rot: -25deg; }
+.sd-leaf-2 { --base-rot: 35deg; }
+.sd-leaf-3 { --base-rot: 45deg; }
+.sd-leaf-4 { --base-rot: -20deg; }
+.sd-leaf-5 { --base-rot: 15deg; }
+
+/* Interview leaves: 揺れる */
+.interview-photo .leaf {
+  animation: leafSway 5s ease-in-out infinite;
+}
+.leaf-l { --base-rot: -25deg; animation-delay: 0.5s; }
+.leaf-r { --base-rot: 40deg; animation-delay: 1.8s; }
+
+/* Letter leaves */
+.letter-leaf-l, .letter-leaf-r {
+  animation: leafSway 7s ease-in-out infinite;
+}
+.letter-leaf-l { --base-rot: -30deg; }
+.letter-leaf-r { --base-rot: 35deg; animation-delay: 2s; }
+
+/* Decoration flower: ぐるぐる呼吸 */
+.deco-flower, .deco-flower g {
+  transform-origin: 30px 30px;
+}
+.deco-flower {
+  animation: flowerBreathe 4s ease-in-out infinite;
+}
+@keyframes flowerBreathe {
+  0%, 100% { transform: rotate(8deg) scale(1); }
+  50% { transform: rotate(12deg) scale(1.08); }
+}
+
+/* Hero title: 文字が下から1行ずつ */
+.hero-title .line {
+  display: block;
+  overflow: hidden;
+}
+.hero-title .line span,
+.hero-title .line {
+  animation: heroLineUp 1s cubic-bezier(0.2,0.7,0.3,1) both;
+}
+.hero-title .line:nth-child(1) { animation-delay: 0.5s; }
+.hero-title .line:nth-child(2) { animation-delay: 0.8s; }
+@keyframes heroLineUp {
+  from { transform: translateY(48px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.hero-eyebrow { animation: heroLineUp 0.8s 0.3s both; }
+.hero-lead    { animation: heroLineUp 0.9s 1.1s both; }
+.hero-cta     { animation: heroLineUp 0.9s 1.3s both; }
+.hero-badges  { animation: heroLineUp 0.9s 1.5s both; }
+.hero-photo   { animation: heroPhotoIn 1.3s 0.6s cubic-bezier(0.2,0.7,0.3,1) both; }
+.hero-stamps  { animation: heroLineUp 0.9s 0.2s both; }
+
+@keyframes heroPhotoIn {
+  from { transform: rotate(-8deg) translateY(40px) scale(0.95); opacity: 0; }
+  to   { transform: rotate(-2deg) translateY(0) scale(1); opacity: 1; }
+}
+
+/* Polaroid hover (for hero) */
+.hero-photo .polaroid {
+  transition: transform 0.7s cubic-bezier(0.2,0.8,0.3,1.2);
+}
+.hero-photo:hover .polaroid {
+  transform: rotate(0deg) scale(1.02);
+}
+
+/* Hamburger open状態 */
+.hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  section[data-anim] {
+    opacity: 1;
+    transform: none !important;
+    filter: none !important;
+  }
+  .draw-on-scroll path,
+  .draw-on-scroll line,
+  .phil-circle path,
+  .flow-num-circle path,
+  .flow-arrow path,
+  .meta-line path,
+  .scroll-line line {
+    stroke-dashoffset: 0 !important;
+  }
+  .tl-line { background-size: 100% 100% !important; }
+  #petals { display: none; }
+}
