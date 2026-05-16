@@ -26,5 +26,5 @@ venv/
 # 内部ドキュメント（公開不要）
 *.md
 references/
-templates/
+common/
 scraper/
