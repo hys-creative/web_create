@@ -23,6 +23,7 @@ venv/
 
 # Claude Code 関連
 .claude/
+skills
 
 # 内部ドキュメント（公開不要）
 *.md
