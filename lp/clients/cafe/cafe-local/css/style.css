@@ -1,0 +1,405 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brown-dark:  #3b2314;
+  --brown-mid:   #7a4e2d;
+  --brown-light: #c49a6c;
+  --cream:       #faf6f0;
+  --cream-dark:  #f0e8da;
+  --white:       #ffffff;
+  --text:        #2c1a0e;
+  --text-light:  #6b4c35;
+  --accent:      #d97b3a;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  background: var(--cream);
+  color: var(--text);
+  line-height: 1.8;
+}
+
+img { max-width: 100%; display: block; }
+
+/* ===================== STICKY CTA BAR ===================== */
+.sticky-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--brown-dark);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.2);
+}
+.sticky-bar p { font-size: 0.85rem; opacity: 0.85; }
+.sticky-bar a {
+  background: var(--accent);
+  color: var(--white);
+  text-decoration: none;
+  padding: 10px 24px;
+  border-radius: 2px;
+  font-size: 0.9rem;
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.sticky-bar a:hover { background: #bf6828; }
+
+/* ===================== HERO ===================== */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--brown-dark);
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(160deg, rgba(59,35,20,0.72) 0%, rgba(59,35,20,0.45) 100%),
+    url('../images/hero.jpg') center/cover no-repeat;
+  /* 画像生成プロンプト: warm cozy cafe interior, wooden tables, soft morning light through window, latte art on table, photo realistic */
+}
+.hero-inner {
+  position: relative;
+  text-align: center;
+  color: var(--white);
+  padding: 40px 24px 100px;
+  max-width: 720px;
+}
+.hero-label {
+  display: inline-block;
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  border: 1px solid rgba(255,255,255,0.5);
+  padding: 4px 16px;
+  margin-bottom: 28px;
+  color: rgba(255,255,255,0.8);
+}
+.hero h1 {
+  font-size: clamp(1.9rem, 5vw, 3.2rem);
+  line-height: 1.45;
+  margin-bottom: 20px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+.hero h1 em {
+  display: block;
+  font-style: normal;
+  color: var(--brown-light);
+}
+.hero-sub {
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  opacity: 0.85;
+  margin-bottom: 40px;
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+.btn-primary {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--white);
+  text-decoration: none;
+  padding: 16px 48px;
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  border-radius: 2px;
+  animation: pulse 2.4s ease-in-out infinite;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: #bf6828; animation: none; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(217,123,58,0.55); }
+  50%       { box-shadow: 0 0 0 10px rgba(217,123,58,0); }
+}
+.hero-note {
+  margin-top: 16px;
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.78rem;
+  opacity: 0.65;
+}
+
+/* ===================== SCROLL FADE ===================== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-in.visible { opacity: 1; transform: none; }
+
+/* ===================== SECTION BASE ===================== */
+section { padding: 80px 24px; }
+.container { max-width: 880px; margin: 0 auto; }
+.section-label {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--brown-light);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 32px;
+  letter-spacing: 0.04em;
+}
+.divider {
+  width: 40px; height: 1px;
+  background: var(--brown-light);
+  margin: 0 auto 40px;
+}
+
+/* ===================== BENEFIT（理想の未来） ===================== */
+.benefit { background: var(--cream); }
+.benefit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+.benefit-card {
+  background: var(--white);
+  padding: 36px 24px;
+  text-align: center;
+  border-bottom: 2px solid var(--brown-light);
+}
+.benefit-icon {
+  width: 56px; height: 56px;
+  background: var(--cream-dark);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+}
+.benefit-card h3 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+}
+.benefit-card p {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+
+/* ===================== ABOUT（メカニズム・こだわり） ===================== */
+.about { background: var(--cream-dark); }
+.about-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.about-img {
+  aspect-ratio: 4/3;
+  background: var(--brown-mid);
+  /* 画像生成プロンプト: close-up of barista hands pouring latte art, coffee beans, warm light, film grain */
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.3);
+  font-family: sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+.about-text p {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text-light);
+  margin-bottom: 20px;
+  line-height: 1.9;
+}
+.about-list {
+  list-style: none;
+  margin-top: 24px;
+}
+.about-list li {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.88rem;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(122,78,45,0.15);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.about-list li::before {
+  content: '—';
+  color: var(--brown-light);
+  flex-shrink: 0;
+}
+
+/* ===================== STORY ===================== */
+.story { background: var(--white); }
+.story-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.story-img {
+  aspect-ratio: 3/4;
+  background: var(--cream-dark);
+  /* 画像生成プロンプト: cafe owner portrait, warm smile, apron, wooden background, natural light */
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-light);
+  font-family: sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+.story-text blockquote {
+  border-left: 2px solid var(--brown-light);
+  padding-left: 20px;
+  margin: 24px 0;
+  font-size: 1.05rem;
+  color: var(--brown-mid);
+  line-height: 1.7;
+}
+.story-text p {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-light);
+  line-height: 1.9;
+  margin-bottom: 16px;
+}
+.story-name {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  margin-top: 20px;
+}
+
+/* ===================== VOICE（口コミ） ===================== */
+.voice { background: var(--cream); }
+.voice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+.voice-card {
+  background: var(--white);
+  padding: 28px 24px;
+}
+.voice-stars { color: #c49a6c; font-size: 0.9rem; margin-bottom: 12px; }
+.voice-card p {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--text-light);
+  margin-bottom: 16px;
+}
+.voice-meta {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.75rem;
+  color: var(--brown-light);
+}
+
+/* ===================== INFO（店舗情報） ===================== */
+.info { background: var(--brown-dark); color: var(--white); }
+.info .section-title { color: var(--white); }
+.info .section-label { color: var(--brown-light); }
+.info .divider { background: rgba(255,255,255,0.2); }
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  margin-top: 48px;
+  align-items: start;
+}
+.info-table { width: 100%; border-collapse: collapse; }
+.info-table tr { border-bottom: 1px solid rgba(255,255,255,0.1); }
+.info-table th {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--brown-light);
+  padding: 14px 0;
+  text-align: left;
+  width: 100px;
+  font-weight: 400;
+}
+.info-table td {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.88rem;
+  padding: 14px 0;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.7;
+}
+.map-placeholder {
+  aspect-ratio: 4/3;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.1em;
+}
+
+/* ===================== CTA ===================== */
+.cta-section { background: var(--cream-dark); text-align: center; }
+.cta-section .section-title { margin-bottom: 12px; }
+.cta-section .cta-sub {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 36px;
+}
+.btn-large {
+  display: inline-block;
+  background: var(--brown-dark);
+  color: var(--white);
+  text-decoration: none;
+  padding: 20px 64px;
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+.btn-large:hover { background: var(--brown-mid); }
+.cta-note {
+  margin-top: 16px;
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-light);
+}
+
+/* ===================== FOOTER ===================== */
+footer {
+  background: var(--brown-dark);
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  padding: 28px 24px;
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px) {
+  section { padding: 56px 20px; }
+  .benefit-grid { grid-template-columns: 1fr; gap: 16px; }
+  .about-inner { grid-template-columns: 1fr; gap: 32px; }
+  .story-inner { grid-template-columns: 1fr; gap: 32px; }
+  .voice-grid { grid-template-columns: 1fr; gap: 16px; }
+  .info-grid { grid-template-columns: 1fr; gap: 32px; }
+  .sticky-bar p { display: none; }
+}
+@media (max-width: 480px) {
+  .hero h1 { font-size: 1.6rem; }
+  .btn-primary { padding: 14px 32px; font-size: 0.92rem; }
+  .btn-large { padding: 16px 40px; }
+}
