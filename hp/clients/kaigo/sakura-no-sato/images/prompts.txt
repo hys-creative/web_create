@@ -1,0 +1,35 @@
+さくらの里 ダミー画像一覧（placehold.jp使用・後日AI生成画像に差し替え）
+
+[index.html]
+
+1. hero.jpg（1920x1080）
+   src: https://placehold.jp/9c8266/f5ede2/1920x1080.png?text=施設の外観
+   prompt: 木漏れ日が差し込む和風庭園に面した介護施設の外観。木目調の建物と縁側、穏やかな午後の光
+
+2. about.jpg（960x1080）
+   src: https://placehold.jp/b68a5e/fff6ec/960x1080.png?text=談話室の風景
+   prompt: 日当たりの良い談話室で穏やかに会話をする高齢の利用者とスタッフ。木製の家具と観葉植物のある温かい雰囲気
+
+3. service-care.jpg（640x480）
+   src: https://placehold.jp/9c8266/f5ede2/640x480.png?text=生活介護の様子
+   prompt: 食事や入浴の介助をするスタッフの手元。安心感のある柔らかい光
+
+4. service-rehabilitation.jpg（640x480）
+   src: https://placehold.jp/b68a5e/fff6ec/640x480.png?text=機能訓練の様子
+   prompt: リハビリ室で軽い体操をする高齢者と理学療法士。明るく清潔感のある室内
+
+5. service-recreation.jpg（640x480）
+   src: https://placehold.jp/9c8266/f0e4d4/640x480.png?text=レクリエーションの様子
+   prompt: 季節の飾り付けがされたホールでレクリエーションを楽しむ利用者たちの笑顔
+
+6. staff-tamura.jpg（400x400）
+   src: https://placehold.jp/9c8266/f5ede2/400x400.png?text=施設長
+   prompt: 柔らかい笑顔の50代の施設長の正面ポートレート、ベージュの制服
+
+7. staff-saeki.jpg（400x400）
+   src: https://placehold.jp/b68a5e/fff6ec/400x400.png?text=介護主任
+   prompt: 穏やかな表情の40代男性介護士の正面ポートレート、ベージュの制服
+
+8. staff-ogawa.jpg（400x400）
+   src: https://placehold.jp/9c8266/f0e4d4/400x400.png?text=看護師
+   prompt: 優しい雰囲気の30代女性看護師の正面ポートレート、白とベージュのユニフォーム
